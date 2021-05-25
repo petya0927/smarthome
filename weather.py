@@ -1,5 +1,4 @@
 from matplotlib import pyplot as plt
-from numpy.core.fromnumeric import size
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -7,7 +6,8 @@ import os
 import tkinter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-import numpy as np
+import subprocess
+import sys
 
 mainpage = requests.get('https://www.idokep.hu/idojaras/Szada')
 soup = BeautifulSoup(mainpage.content, 'html.parser')
@@ -150,6 +150,10 @@ def init_tkinter():
 
     return root, fig, canvas
 
+def update():
+    subprocess.Popen(['python', 'update_script.py'])
+    sys.exit(0)
+
 # INIT
 root, fig, canvas = init_tkinter()
 times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
@@ -162,9 +166,11 @@ temp_plot.plot(times, temps, '-o', linewidth=3)
 plt.xticks([0, len(temps)])
 
 # BUTTONS
-button = tkinter.Button(root, text="Quit", command=root.quit)
+update_button = tkinter.Button(root, text='Update', command=update)
+quit_button = tkinter.Button(root, text="Quit", command=root.quit)
 
 # PACKING
-button.pack(side=tkinter.TOP)
+update_button.pack(side=tkinter.TOP)
+quit_button.pack(side=tkinter.TOP)
 canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 tkinter.mainloop()
