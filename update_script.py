@@ -1,17 +1,21 @@
 import git
 import os, stat
-import time
 import shutil
-'''
-#os.rmdir('smarthome')
-#os.chmod('C:/Users/GRLSat/Desktop/PETI/Programozás/smarthome', stat.S_IWRITE)
-shutil.rmtree('C:/Users/GRLSat/Desktop/PETI/Programozás/smarthome/', ignore_errors=True)
-time.sleep(5)
-git.Git('C:/Users/GRLSat/Desktop/PETI/Programozás/').clone('https://github.com/petya0927/smarthome')
-
 import subprocess
-subprocess.Popen(['python', 'weather.py'])'''
 
-repo = git.Repo("C:/Users/GRLSat/Desktop/PETI/Programozás/smarthome")
-repo.remotes.pull()
-input()
+dir = r'C:/Users/GRLSat/Desktop/PETI/Programozás/smarthome'
+
+def on_rm_error(func, path, exc_info):
+    os.chmod(path, stat.S_IWRITE)
+    os.unlink(path)
+
+for i in os.listdir(dir):
+    if i.endswith('git'):
+        tmp = os.path.join(dir, i)
+        while True:
+            subprocess.call(['attrib', '-H', tmp])
+            break
+        shutil.rmtree(tmp, onerror=on_rm_error)
+    os.remove(i)
+
+git.Git('C:/Users/GRLSat/Desktop/PETI/Programozás').clone('git://github.com/petya0927/smarthome')
