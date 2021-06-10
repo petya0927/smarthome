@@ -150,10 +150,6 @@ def init_tkinter():
 
     return root, fig, canvas
 
-def update():
-    subprocess.Popen(['python', 'update_script.py'])
-    sys.exit(0)
-
 # INIT
 root, fig, canvas = init_tkinter()
 times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
@@ -166,11 +162,11 @@ temp_plot.plot(times, temps, '-o', linewidth=3)
 plt.xticks([0, len(temps)])
 
 # BUTTONS
-update_button = tkinter.Button(root, text='Update', command=update)
+#update_button = tkinter.Button(root, text='Update', command=update)
 quit_button = tkinter.Button(root, text="Quit", command=root.quit)
 
 # PACKING
-update_button.pack(side=tkinter.TOP)
+#update_button.pack(side=tkinter.TOP)
 quit_button.pack(side=tkinter.TOP)
 canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 tkinter.mainloop()
