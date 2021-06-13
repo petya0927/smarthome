@@ -55,35 +55,42 @@ def min_max_map():
     return soup.find(class_='pb-4 img-fluid').find(name='tmax')['src'], soup.find(class_='pb-4 img-fluid').find(name='tmin')['src']
 
 def nextday_hourly():
+    # INIT 
     forecastpage = requests.get('https://www.idokep.hu/elorejelzes/Szada')
     fsoup = BeautifulSoup(forecastpage.content, 'html.parser')
-    #div = list(list(list(list(list(list(list(list(list(list(fsoup.children)[2].children)[3].children)[17].children)[1].children)[1].children)[3].children)[1].children)[3].children)[1].children)[5]
-    div = fsoup.find(class_='ik hourly-forecast-card-container')
+    
+    # FIND CARD CONTAINER
+    div = list(fsoup.find(class_='ik new-hourly-forecast-card-container'))
+    del div[::2]
 
     winds, rain_chances, rains = [], [], []
 
-    for div_i in range(1, len(list(div.children))-1, 2):
-        act = list(div.children)[div_i]
+    for card_div in div:
 
-        wind_data = list(list(list(act.children)[7].children)[1].children)[0]['class']
+        #WIND
+        wind_data = card_div.select('div .ik .wind')[0]['class']
         wind = [wind_data[2], wind_data[3][1:]]
 
-        rain_cont = act.find(class_='ik hourly-rainlevel-container')
+        # RAIN
+        rain_cont = card_div.find(class_='ik hourly-rainlevel-container')
         if rain_cont == None:
             rain = '0 mm'
         elif rain_cont != None:
             rain = list(rain_cont.find(class_='ik hourly-rainlevel').children)[1]
 
-        rain_chance_cont = act.find(class_='ik hourly-rain-chance')
+        # RAIN CHANCE
+        rain_chance_cont = card_div.find(class_='ik hourly-rain-chance')
         if rain_chance_cont == None:
             rain_chance = '0%'
         elif rain_chance_cont != None:
             rain_chance = rain_chance_cont.find(class_='interact').get_text()
 
+        # APPEND TO LISTS
         winds.append(wind)
-        rain_chances.append(rain_chance)
         rains.append(rain)
+        rain_chances.append(rain_chances)
 
+    # GET OTHER DATA
     times = [time.get_text().strip() for time in fsoup.find_all(class_='ik hourly-forecast-hour')]
     data_descs = [temp['data-content'] for temp in fsoup.select('.interact')]
     temps = [int(temp.get_text().strip()) for temp in fsoup.find_all(class_='ik temperature-circled flex-v-m mx-auto')]
@@ -150,6 +157,10 @@ def init_tkinter():
 
     return root, fig, canvas
 
+def update():
+    subprocess.Popen(['python', 'update.py'])
+    exit()
+
 # INIT
 root, fig, canvas = init_tkinter()
 times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
@@ -162,11 +173,11 @@ temp_plot.plot(times, temps, '-o', linewidth=3)
 plt.xticks([0, len(temps)])
 
 # BUTTONS
-#update_button = tkinter.Button(root, text='Update', command=update)
+update_button = tkinter.Button(root, text='Update', command=update)
 quit_button = tkinter.Button(root, text="Quit", command=root.quit)
 
 # PACKING
-#update_button.pack(side=tkinter.TOP)
+update_button.pack(side=tkinter.TOP)
 quit_button.pack(side=tkinter.TOP)
 canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 tkinter.mainloop()
