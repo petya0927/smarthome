@@ -88,12 +88,12 @@ def nextday_hourly():
         # APPEND TO LISTS
         winds.append(wind)
         rains.append(rain)
-        rain_chances.append(rain_chances)
+        rain_chances.append(rain_chance)
 
     # GET OTHER DATA
-    times = [time.get_text().strip() for time in fsoup.find_all(class_='ik hourly-forecast-hour')]
+    times = [time.get_text().strip() for time in fsoup.find_all(class_='ik new-hourly-forecast-hour')]
     data_descs = [temp['data-content'] for temp in fsoup.select('.interact')]
-    temps = [int(temp.get_text().strip()) for temp in fsoup.find_all(class_='ik temperature-circled flex-v-m mx-auto')]
+    temps = [int(temp.get_text().strip()) for temp in fsoup.find_all(class_='ik hover-over d-block') if temp.get_text().strip() != '']
     icons = [temp['src'] for temp in fsoup.find_all(class_='ik forecast-icon')]
 
     return times[:24], temps[:24], winds[:24], rain_chances[:24], rains[:24], data_descs[:24], icons[:24]
@@ -158,7 +158,7 @@ def init_tkinter():
     return root, fig, canvas
 
 def update():
-    subprocess.Popen(['python', 'update.py'])
+    subprocess.Popen(['python', 'update_script.py'])
     exit()
 
 # INIT
