@@ -2,8 +2,14 @@ import git
 import os, stat
 import shutil
 import subprocess
+import time
+
+start_time = time.time()
 
 dir = r'C:/Users/GRLSat/Desktop/PETI/Programozás/smarthome'
+git_dir = 'git://github.com/petya0927/smarthome'
+
+print(f'Update script from {git_dir} into {dir}...')
 
 def on_rm_error(func, path, exc_info):
     os.chmod(path, stat.S_IWRITE)
@@ -16,6 +22,13 @@ for i in os.listdir(dir):
             subprocess.call(['attrib', '-H', tmp])
             break
         shutil.rmtree(tmp, onerror=on_rm_error)
-    os.remove(i)
+    else:
+        os.remove(i)
 
 git.Git('C:/Users/GRLSat/Desktop/PETI/Programozás').clone('git://github.com/petya0927/smarthome')
+
+print(f'Updated in {time.time() - start_time} seconds')
+print('Reopening session...')
+
+subprocess.Popen(['python', 'weather.py'])
+exit()
