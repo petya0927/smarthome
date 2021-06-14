@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import git
 import os, stat
 import shutil
