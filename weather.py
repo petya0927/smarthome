@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from matplotlib import figure
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -161,11 +162,22 @@ def update():
     subprocess.Popen(['python', 'update_script.py'])
     exit()
 
+'''
 # INIT
-root, fig, canvas = init_tkinter()
-times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
+root = tkinter.Tk()
+root.title('Weather widget')
 
-temp_plot = fig.add_subplot()
+fig = Figure(figsize=(5, 4), dpi=100)
+
+canvas = FigureCanvasTkAgg(fig, master=root)
+canvas.draw()
+
+toolbar = NavigationToolbar2Tk(canvas, root, pack_toolbar=False)
+toolbar.update()
+'''
+times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
+'''
+temp_plot = fig.add_subplot(1, 1, 1)
 
 # PLOTTING
 plot_text(temp_plot, times, temps)
@@ -180,4 +192,23 @@ quit_button = tkinter.Button(root, text="Quit", command=root.quit)
 update_button.pack(side=tkinter.TOP)
 quit_button.pack(side=tkinter.TOP)
 canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
-tkinter.mainloop()
+tkinter.mainloop()'''
+
+root = tkinter.Tk()
+
+fig = Figure(figsize=(5, 4), dpi=100)
+plot = fig.add_subplot(1, 1, 1)
+
+plot.plot(times, temps, color='red', marker='o', linestyle='')
+
+canvas = FigureCanvasTkAgg(fig, root)
+canvas.get_tk_widget().grid(row=0, column=0)
+
+update_button = tkinter.Button(root, text='Update', command=update)
+quit_button = tkinter.Button(root, text="Quit", command=exit)
+
+# PACKING
+update_button.grid(row=1, column=0)
+quit_button.grid(row=1, column=1)
+
+root.mainloop()
