@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+from tkinter.constants import END
 from matplotlib import pyplot as plt
 from matplotlib import figure
 import requests
@@ -11,10 +13,14 @@ from matplotlib.figure import Figure
 import subprocess
 import sys
 
-mainpage = requests.get('https://www.idokep.hu/idojaras/Szada')
-soup = BeautifulSoup(mainpage.content, 'html.parser')
+from requests.api import delete
+
+__test__ = True
 
 def actual_weather():
+    mainpage = requests.get('https://www.idokep.hu/idojaras/Szada')
+    soup = BeautifulSoup(mainpage.content, 'html.parser')
+
     act_desc = soup.find(class_='ik current-weather-short-desc d-block d-md-inline ml-md-2 mt-2 mt-xl-0').get_text().strip()
     act_shortdesc = soup.find(class_='ik current-weather').get_text().strip()
     act_temp = soup.find(class_='ik current-temperature').get_text().strip()
@@ -71,7 +77,7 @@ def nextday_hourly():
 
         #WIND
         wind_data = card_div.select('div .ik .wind')[0]['class']
-        wind = [wind_data[2], wind_data[3][1:]]
+        wind = [wind_data[2], int(wind_data[3][1:])]
 
         # RAIN
         rain_cont = card_div.find(class_='ik hourly-rainlevel-container')
@@ -112,6 +118,9 @@ def text_forecast():
     return title, today, tomorrow, after
 
 def get_sun_data():
+    url = requests.get('https://www.idokep.hu/idojaras/Szada')
+    soup = BeautifulSoup(url.content, 'html.parser')
+
     sun = soup.find(class_='col-6 col-sm-8 col-md-12 pt-4 pt-md-2')
     sun_rise = sun.find(class_=None).get_text().strip()
     sun_set = sun.find(class_='pt-2').get_text().strip()
@@ -163,53 +172,48 @@ def update():
     subprocess.Popen(['python', 'update_script.py'])
     exit()
 
-'''
-# INIT
+def test():
+    times = [1, 2, 3, 4, 5]
+    temps = [20, 25, 23, 26, 21]
+    winds = [['gyenge', 84], ['gyenge', 88], ['mérsékelt', 152], ['gyenge', 213], ['erős', 130]]
+    rain_chances = ['0%', '10%', '20%', '50%', '80%']
+    rains = ['0 mm', '1 mm', '1 mm', '3 mm', '7 mm']
+    data_descs = []
+    icons = []
+    return times, temps, winds, rain_chances, rains, data_descs, icons
+
+def temp_plot(root, times, temps):
+    fig = Figure(figsize=(5, 4), dpi=100)
+    temp_plot = fig.add_subplot(1, 1, 1)
+
+    temp_plot.plot(times, temps, '-o', linewidth=3)
+    plot_text(temp_plot, times, temps)
+    
+    canvas = FigureCanvasTkAgg(fig, root)
+    canvas.get_tk_widget().grid(row=0, columnspan=3)
+
+    return canvas
+
+def delete_plot():
+    return canvas.get_tk_widget().grid_forget()
+
+# CHECK IF TEST RUN
+if __test__:
+    times, temps, winds, rain_chances, rains, data_descs, icons = test()
+else:
+    times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
+
+# TKINTER WINDOW SETUP
 root = tkinter.Tk()
-root.title('Weather widget')
 
-fig = Figure(figsize=(5, 4), dpi=100)
+canvas = temp_plot(root, times, temps)
 
-canvas = FigureCanvasTkAgg(fig, master=root)
-canvas.draw()
-
-toolbar = NavigationToolbar2Tk(canvas, root, pack_toolbar=False)
-toolbar.update()
-'''
-times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
-'''
-temp_plot = fig.add_subplot(1, 1, 1)
-
-# PLOTTING
-plot_text(temp_plot, times, temps)
-temp_plot.plot(times, temps, '-o', linewidth=3)
-plt.xticks([0, len(temps)])
-
-# BUTTONS
+quit_button = tkinter.Button(root, text='Quit', command=exit)
 update_button = tkinter.Button(root, text='Update', command=update)
-quit_button = tkinter.Button(root, text="Quit", command=root.quit)
+delete_button = tkinter.Button(root, text='Delete', command=delete_plot)
 
-# PACKING
-update_button.pack(side=tkinter.TOP)
-quit_button.pack(side=tkinter.TOP)
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
-tkinter.mainloop()'''
-
-root = tkinter.Tk()
-
-fig = Figure(figsize=(5, 4), dpi=100)
-plot = fig.add_subplot(1, 1, 1)
-
-plot.plot(times, temps, color='red', marker='o', linestyle='')
-
-canvas = FigureCanvasTkAgg(fig, root)
-canvas.get_tk_widget().grid(row=0, column=0)
-
-update_button = tkinter.Button(root, text='Update', command=update)
-quit_button = tkinter.Button(root, text="Quit", command=exit)
-
-# PACKING
-update_button.grid(row=1, column=0)
-quit_button.grid(row=1, column=1)
+quit_button.grid(row=1, column=0)
+update_button.grid(row=1, column=1)
+delete_button.grid(row=1, column=2)
 
 root.mainloop()

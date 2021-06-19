@@ -10,13 +10,13 @@ start_time = time.time()
 dir = r'C:/Users/GRLSat/Desktop/PETI/Programozás/smarthome'
 git_dir = 'git://github.com/petya0927/smarthome'
 
-print(f'Update script from {git_dir} into {dir}...')
+print(f'Update script from {git_dir} into current directory...')
 
 def on_rm_error(func, path, exc_info):
     os.chmod(path, stat.S_IWRITE)
     os.unlink(path)
 
-for i in os.listdir(dir):
+for i in os.listdir('.'):
     if i.endswith('git'):
         tmp = os.path.join(dir, i)
         while True:
@@ -26,7 +26,7 @@ for i in os.listdir(dir):
     else:
         os.remove(i)
 
-git.Git('C:/Users/GRLSat/Desktop/PETI/Programozás').clone('git://github.com/petya0927/smarthome')
+git.Git('.').clone('git://github.com/petya0927/smarthome')
 
 print(f'Updated in {time.time() - start_time} seconds')
 print('Reopening session...')
