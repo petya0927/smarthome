@@ -169,7 +169,7 @@ def init_tkinter():
     return root, fig, canvas
 
 def update():
-    subprocess.Popen(['python', 'update_script.py'])
+    subprocess.Popen(['python3', 'update_script.py'])
     exit()
 
 def test():
