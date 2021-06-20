@@ -207,7 +207,6 @@ else:
 root = tkinter.Tk()
 
 canvas = temp_plot(root, times, temps)
-
 quit_button = tkinter.Button(root, text='Quit', command=exit)
 update_button = tkinter.Button(root, text='Update', command=update)
 delete_button = tkinter.Button(root, text='Delete', command=delete_plot)
