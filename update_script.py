@@ -17,10 +17,7 @@ def on_rm_error(func, path, exc_info):
 
 for i in os.listdir('.'):
     if i.endswith('git'):
-        tmp = os.path.join(dir, i)
-        #while True:
-            #subprocess.call(['attrib', '-H', tmp])
-            #break
+        tmp = i
         shutil.rmtree(tmp, onerror=on_rm_error)
     else:
         os.remove(i)
