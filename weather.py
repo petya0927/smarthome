@@ -146,9 +146,13 @@ def dwnld_pic(src_lst):
         f.write(image.content)
         f.close()
 
-def plot_text(plot, times, temps):
-    for point in range(len(times)):
-        plot.text(times[point], temps[point], f'{temps[point]} C°')
+def plot_text(plot, x, y, unit):
+    for point in range(len(x)):
+        plot.text(x[point], y[point], str(y[point]) + unit)
+
+def bar_text(bar, x, y, unit):
+    for point in range(len(x)):
+        bar.text(x[point], y[point], str(y[point]) + unit)
 
 def init_tkinter():
     root = tkinter.Tk()
@@ -182,7 +186,7 @@ def temp_plot(root, times, temps):
     plot = fig.add_subplot(1, 1, 1)
 
     plot.plot(times, temps, '-o', linewidth=3)
-    plot_text(plot, times, temps)
+    plot_text(plot, times, temps, '°C')
     
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.get_tk_widget().grid(row=0, columnspan=3)
@@ -192,10 +196,10 @@ def temp_plot(root, times, temps):
 def rain_plot(root, times, rains):
     rains_data = [i[:-3] for i in rains]
 
-    plot = fig.add_subplot(1, 1, 1)
+    bar = fig.add_subplot(1, 1, 1)
 
-    plot.bar(times, rains_data)
-    plot_text(plot, times, rains)
+    bar.bar(times, rains_data)
+    bar_text(bar, times, rains_data, 'mm')
 
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.get_tk_widget().grid(row=0, columnspan=3)
