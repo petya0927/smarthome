@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
 from tkinter.constants import END
 from matplotlib import pyplot as plt
 from matplotlib import figure
@@ -11,9 +10,6 @@ import tkinter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 import subprocess
-import sys
-
-from requests.api import delete
 
 __test__ = True
 
@@ -183,19 +179,32 @@ def test():
     return times, temps, winds, rain_chances, rains, data_descs, icons
 
 def temp_plot(root, times, temps):
-    fig = Figure(figsize=(5, 4), dpi=100)
-    temp_plot = fig.add_subplot(1, 1, 1)
+    plot = fig.add_subplot(1, 1, 1)
 
-    temp_plot.plot(times, temps, '-o', linewidth=3)
-    plot_text(temp_plot, times, temps)
+    plot.plot(times, temps, '-o', linewidth=3)
+    plot_text(plot, times, temps)
     
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.get_tk_widget().grid(row=0, columnspan=3)
 
     return canvas
 
-def delete_plot():
-    return canvas.get_tk_widget().grid_forget()
+def rain_plot(root, times, rains):
+    rains_data = [i[:-3] for i in rains]
+
+    plot = fig.add_subplot(1, 1, 1)
+
+    plot.bar(times, rains_data)
+    plot_text(plot, times, rains)
+
+    canvas = FigureCanvasTkAgg(fig, root)
+    canvas.get_tk_widget().grid(row=0, columnspan=3)
+
+    return canvas
+
+def next_plot():
+    fig.clear(True)
+    rain_plot(root, times, rains)
 
 # CHECK IF TEST RUN
 if __test__:
@@ -206,13 +215,16 @@ else:
 # TKINTER WINDOW SETUP
 root = tkinter.Tk()
 
+fig = Figure(figsize=(5, 4), dpi=100)
+
 canvas = temp_plot(root, times, temps)
+
 quit_button = tkinter.Button(root, text='Quit', command=exit)
 update_button = tkinter.Button(root, text='Update', command=update)
-delete_button = tkinter.Button(root, text='Delete', command=delete_plot)
+next_button = tkinter.Button(root, text='Next Plot', command=next_plot)
 
 quit_button.grid(row=1, column=0)
 update_button.grid(row=1, column=1)
-delete_button.grid(row=1, column=2)
+next_button.grid(row=1, column=2)
 
 root.mainloop()
