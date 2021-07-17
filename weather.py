@@ -9,7 +9,7 @@ import os
 import tkinter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-import subprocess
+import main_menu
 
 __test__ = False
 
@@ -168,10 +168,6 @@ def init_tkinter():
 
     return root, fig, canvas
 
-def update():
-    subprocess.Popen(['python3', 'update_script.py'])
-    exit()
-
 def test():
     times = [1, 2, 3, 4, 5]
     temps = [20, 25, 23, 26, 21]
@@ -200,7 +196,7 @@ def plot_ui(root, fig):
     #update_button = tkinter.Button(root, text='Update')
     #update_button.grid(row=1, column=1, sticky="NSEW")
 
-    mainmenu_button = tkinter.Button(root, text='Main menu', command=lambda: main_menu(root))
+    mainmenu_button = tkinter.Button(root, text='Main menu', command=lambda: main_menu.main_menu(root))
     mainmenu_button.grid(row=1, column=0, sticky="NSEW")
 
 def temp_plot(root):
@@ -237,33 +233,9 @@ def rain_plot(root):
     for i, v in enumerate(rains_data):
         ax.text(i, v, str(v))
 
-def main_menu(root):
-    [child.destroy() for child in root.winfo_children()]
-
-    temp_button = tkinter.Button(root, text='Temperature data', command=lambda: temp_plot(root))
-    temp_button.grid(sticky="NSEW")
-
-    rain_button = tkinter.Button(root, text='Rain data', command=lambda: rain_plot(root))
-    rain_button.grid(sticky="NSEW")
-
-    update_button = tkinter.Button(root, text='Update', command=update)
-    update_button.grid(sticky="NSEW")
-
-    exit_button = tkinter.Button(root, text='Exit', command=exit)
-    exit_button.grid(sticky="NSEW")
-
 '''
 # CHECK IF TEST RUN
 if __test__:
     times, temps, winds, rain_chances, rains, data_descs, icons = test()
 else:
     times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()'''
-
-root = tkinter.Tk()
-win_width = root.winfo_screenwidth()
-win_height = root.winfo_screenheight()
-#root.attributes('-fullscreen', True)
-
-main_menu(root)
-
-root.mainloop()
