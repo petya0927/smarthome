@@ -11,7 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 import subprocess
 
-__test__ = True
+__test__ = False
 
 def actual_weather():
     mainpage = requests.get('https://www.idokep.hu/idojaras/Szada')
@@ -150,7 +150,7 @@ def plot_text(plot, x, y, unit):
     for point in range(len(x)):
         plot.text(x[point], y[point], str(y[point]) + unit)
 
-def bar_text(bar, x, y, unit):
+def bar_text(bar, x, y, unit):  
     for point in range(len(x)):
         bar.text(x[point], y[point], str(y[point]) + unit)
 
@@ -182,53 +182,88 @@ def test():
     icons = []
     return times, temps, winds, rain_chances, rains, data_descs, icons
 
-def temp_plot(root, times, temps):
-    plot = fig.add_subplot(1, 1, 1)
+def plot_ui(root, fig):
 
-    plot.plot(times, temps, '-o', linewidth=3)
-    plot_text(plot, times, temps, '°C')
+    root.grid()
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_rowconfigure(1, weight=1)
+    root.grid_columnconfigure(0, weight=1)
+    root.grid_columnconfigure(1, weight=1)
+    root.grid_columnconfigure(2, weight=1)
+
+    canvas = FigureCanvasTkAgg(fig, root)
+    canvas.get_tk_widget().grid(row=0, column=0, sticky="NSEW")
+
+    #exit_button = tkinter.Button(root, text='Exit', command=exit)
+    #exit_button.grid(row=1, column=0, sticky="NSEW")
+
+    #update_button = tkinter.Button(root, text='Update')
+    #update_button.grid(row=1, column=1, sticky="NSEW")
+
+    mainmenu_button = tkinter.Button(root, text='Main menu', command=lambda: main_menu(root))
+    mainmenu_button.grid(row=1, column=0, sticky="NSEW")
+
+def temp_plot(root):
+    [child.destroy() for child in root.winfo_children()]
+    fig, ax = plt.subplots()
+    plot_ui(root, fig)
+
+    if __test__:
+        times, temps, winds, rain_chances, rains, data_descs, icons = test()
+    else:   
+        times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
+
+    ax.plot(times, temps)
+    for point in range(len(times)):
+        ax.text(times[point], temps[point], str(temps[point]))
+
+def rain_plot(root):
+
+    [child.destroy() for child in root.winfo_children()]
+    fig, ax = plt.subplots()
+    plot_ui(root, fig)
+
+    if __test__:
+        times, temps, winds, rain_chances, rains, data_descs, icons = test()
+    else:   
+        times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
+
+    rains_data = [int(i[:-3]) for i in rains]
+
+    ax.bar(times, rains_data)
+    ax.set_xlabel('Days')
+    ax.set_ylabel('Rain [mm]')
     
-    canvas = FigureCanvasTkAgg(fig, root)
-    canvas.get_tk_widget().grid(row=0, columnspan=3)
+    for i, v in enumerate(rains_data):
+        ax.text(i, v, str(v))
 
-    return canvas
+def main_menu(root):
+    [child.destroy() for child in root.winfo_children()]
 
-def rain_plot(root, times, rains):
-    rains_data = [i[:-3] for i in rains]
+    temp_button = tkinter.Button(root, text='Temperature data', command=lambda: temp_plot(root))
+    temp_button.grid(sticky="NSEW")
 
-    bar = fig.add_subplot(1, 1, 1)
+    rain_button = tkinter.Button(root, text='Rain data', command=lambda: rain_plot(root))
+    rain_button.grid(sticky="NSEW")
 
-    bar.bar(times, rains_data)
-    bar_text(bar, times, rains_data, 'mm')
+    update_button = tkinter.Button(root, text='Update', command=update)
+    update_button.grid(sticky="NSEW")
 
-    canvas = FigureCanvasTkAgg(fig, root)
-    canvas.get_tk_widget().grid(row=0, columnspan=3)
+    exit_button = tkinter.Button(root, text='Exit', command=exit)
+    exit_button.grid(sticky="NSEW")
 
-    return canvas
-
-def next_plot():
-    fig.clear(True)
-    rain_plot(root, times, rains)
-
+'''
 # CHECK IF TEST RUN
 if __test__:
     times, temps, winds, rain_chances, rains, data_descs, icons = test()
 else:
-    times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()
+    times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()'''
 
-# TKINTER WINDOW SETUP
 root = tkinter.Tk()
+win_width = root.winfo_screenwidth()
+win_height = root.winfo_screenheight()
+#root.attributes('-fullscreen', True)
 
-fig = Figure(figsize=(5, 4), dpi=100)
-
-canvas = temp_plot(root, times, temps)
-
-quit_button = tkinter.Button(root, text='Quit', command=exit)
-update_button = tkinter.Button(root, text='Update', command=update)
-next_button = tkinter.Button(root, text='Next Plot', command=next_plot)
-
-quit_button.grid(row=1, column=0)
-update_button.grid(row=1, column=1)
-next_button.grid(row=1, column=2)
+main_menu(root)
 
 root.mainloop()
