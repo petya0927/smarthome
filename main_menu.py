@@ -21,11 +21,13 @@ def main_menu(root):
     exit_button = tkinter.Button(root, text='Exit', command=exit)
     exit_button.grid(sticky="NSEW")
 
-root = tkinter.Tk()
-win_width = root.winfo_screenwidth()
-win_height = root.winfo_screenheight()
-#root.attributes('-fullscreen', True)
+if __name__ == '__main__':
 
-main_menu(root)
+    root = tkinter.Tk()
+    win_width = root.winfo_screenwidth()
+    win_height = root.winfo_screenheight()
+    #root.attributes('-fullscreen', True)
 
-root.mainloop()
+    main_menu(root)
+
+    root.mainloop()

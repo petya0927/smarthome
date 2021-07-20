@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from tkinter.constants import END
 from matplotlib import pyplot as plt
-from matplotlib import figure
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -9,9 +7,8 @@ import os
 import tkinter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-import main_menu
 
-__test__ = False
+__test__ = True
 
 def actual_weather():
     mainpage = requests.get('https://www.idokep.hu/idojaras/Szada')
@@ -180,6 +177,8 @@ def test():
 
 def plot_ui(root, fig):
 
+    from main_menu import main_menu
+
     root.grid()
     root.grid_rowconfigure(0, weight=1)
     root.grid_rowconfigure(1, weight=1)
@@ -190,13 +189,7 @@ def plot_ui(root, fig):
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.get_tk_widget().grid(row=0, column=0, sticky="NSEW")
 
-    #exit_button = tkinter.Button(root, text='Exit', command=exit)
-    #exit_button.grid(row=1, column=0, sticky="NSEW")
-
-    #update_button = tkinter.Button(root, text='Update')
-    #update_button.grid(row=1, column=1, sticky="NSEW")
-
-    mainmenu_button = tkinter.Button(root, text='Main menu', command=lambda: main_menu.main_menu(root))
+    mainmenu_button = tkinter.Button(root, text='Main menu', command= lambda: main_menu(root))
     mainmenu_button.grid(row=1, column=0, sticky="NSEW")
 
 def temp_plot(root):
@@ -231,11 +224,4 @@ def rain_plot(root):
     ax.set_ylabel('Rain [mm]')
     
     for i, v in enumerate(rains_data):
-        ax.text(i, v, str(v))
-
-'''
-# CHECK IF TEST RUN
-if __test__:
-    times, temps, winds, rain_chances, rains, data_descs, icons = test()
-else:
-    times, temps, winds, rain_chances, rains, data_descs, icons = nextday_hourly()'''
+        ax.text(i+1, v, str(v))
