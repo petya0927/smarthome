@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from choose_crypto import main
+from tkinter.constants import BOTH, BOTTOM, CENTER, TOP
 from matplotlib import pyplot as plt
 import requests
 from bs4 import BeautifulSoup
@@ -9,7 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Weather():
 
-    __test__ = True
+    __test__ = False
 
     def actual_weather():
         mainpage = requests.get('https://www.idokep.hu/idojaras/Szada')
@@ -163,13 +165,12 @@ class Weather():
         root.grid_rowconfigure(1, weight=1)
         root.grid_columnconfigure(0, weight=1)
         root.grid_columnconfigure(1, weight=1)
-        root.grid_columnconfigure(2, weight=1)
 
         canvas = FigureCanvasTkAgg(fig, root)
-        canvas.get_tk_widget().grid(row=0, column=0, sticky="NSEW")
+        canvas.get_tk_widget().pack(fill=BOTH, expand=True)
 
-        mainmenu_button = tkinter.Button(root, text='Main menu', command= lambda: Main_menu.menu_ui(root))
-        mainmenu_button.grid(row=1, column=0, sticky="NSEW")
+        mainmenu_button = tkinter.Button(root, text='Main menu', command=lambda: Main_menu.menu_ui(root))
+        mainmenu_button.pack(fill=BOTH)
 
     def temp_plot(root):
         [child.destroy() for child in root.winfo_children()]
@@ -203,3 +204,8 @@ class Weather():
         
         for i, v in enumerate(rains_data):
             ax.text(i+1, v, str(v))
+
+if __name__ == '__main__':
+    root = tkinter.Tk()
+    Weather.temp_plot(root)
+    root.mainloop()

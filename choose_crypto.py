@@ -20,7 +20,7 @@ def change_coin(value):
     global coin_choosed
     COIN = value
     coin_choosed = True
-    print(COIN, coin_choosed)
+    # print(COIN, coin_choosed)
     return COIN, coin_choosed
 
 def change_curr(value):
@@ -28,11 +28,10 @@ def change_curr(value):
     global currency_choosed
     CURRENCY = value
     currency_choosed = True
-    print(CURRENCY, currency_choosed)
+    # print(CURRENCY, currency_choosed)
     return CURRENCY, currency_choosed
 
 def choose_coin(root):
-
     [child.destroy() for child in root.winfo_children()]
     root.grid()
     canvas = tkinter.Canvas(root)
@@ -51,6 +50,9 @@ def choose_coin(root):
     #tkinter.Button(root, text='Plot!', command=lambda: crypto.main(root, COIN, CURRENCY)).grid()
 
 def main(root):
+    global coin_choosed
+    global currency_choosed
+    coin_choosed, currency_choosed = False, False
     choose_coin(root)
     root.mainloop()
 

@@ -4,7 +4,7 @@ import choose_crypto
 import subprocess
 
 def update():
-    subprocess.Popen(['python3', 'update_script.py'])
+    subprocess.Popen(['python', 'update_script.py'])
     exit()
 
 class Main_menu():
@@ -22,7 +22,7 @@ class Main_menu():
         crypto_button = tkinter.Button(root, text='Actual crypto price', command=lambda: choose_crypto.main(root))
         crypto_button.grid(sticky="NSEW")
 
-        update_button = tkinter.Button(root, text='Update application', command=update)
+        update_button = tkinter.Button(root, text='Update application', command='')
         update_button.grid(sticky="NSEW")
 
         exit_button = tkinter.Button(root, text='Exit application', command=exit)

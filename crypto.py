@@ -1,3 +1,4 @@
+from tkinter.constants import BOTH
 import cryptocompare
 from datetime import datetime
 from matplotlib import pyplot as plt
@@ -58,10 +59,10 @@ def plot_ui(root, fig):
     # root.grid_columnconfigure(2, weight=1)
 
     canvas = FigureCanvasTkAgg(fig, root)
-    canvas.get_tk_widget().grid()
+    canvas.get_tk_widget().pack(fill=BOTH, expand=True)
 
     mainmenu_button = tkinter.Button(root, text='Main menu', command= lambda: Main_menu.menu_ui(root))
-    mainmenu_button.grid()
+    mainmenu_button.pack(fill=BOTH)
 
 def plotting(root, fig, ax, coin, currency):
 
